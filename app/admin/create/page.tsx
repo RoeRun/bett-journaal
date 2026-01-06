@@ -302,7 +302,7 @@ export default function CreateSubItemPage() {
 
             {/* Media Upload */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Foto's en Video's</label>
+              <label className="text-sm font-medium mb-2 block">Foto&apos;s en Video&apos;s</label>
               <MediaUpload onFilesChange={setMediaFiles} />
             </div>
 
@@ -328,7 +328,7 @@ export default function CreateSubItemPage() {
 
             {/* Themes */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Thema's</label>
+              <label className="text-sm font-medium mb-2 block">Thema&apos;s</label>
               <ThemeSelector
                 themes={themes}
                 selectedThemes={formData.selectedThemes}

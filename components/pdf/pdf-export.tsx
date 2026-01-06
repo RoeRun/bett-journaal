@@ -116,7 +116,7 @@ export function PDFExport({ days, themes }: PDFExportProps) {
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Filter op Thema's (optioneel)</label>
+          <label className="text-sm font-medium mb-2 block">Filter op Thema&apos;s (optioneel)</label>
           <div className="space-y-2 max-h-32 overflow-y-auto">
             {themes.map((theme) => (
               <label key={theme.id} className="flex items-center space-x-2 cursor-pointer">

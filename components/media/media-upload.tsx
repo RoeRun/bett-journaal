@@ -160,7 +160,7 @@ export function MediaUpload({ onFilesChange, maxSize = { image: 10, video: 50, a
           Sleep bestanden hierheen of klik om te uploaden
         </p>
         <p className="text-xs text-muted-foreground mb-4">
-          Foto's: max {maxSize.image}MB | Video's: max {maxSize.video}MB | Audio: max {maxSize.audio}MB
+          Foto&apos;s: max {maxSize.image}MB | Video&apos;s: max {maxSize.video}MB | Audio: max {maxSize.audio}MB
         </p>
         <input
           type="file"
