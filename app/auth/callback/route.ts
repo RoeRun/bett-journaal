@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const origin = requestUrl.origin
 
   if (code) {
     try {
@@ -13,14 +14,14 @@ export async function GET(request: Request) {
       
       if (error) {
         console.error('Auth error:', error)
-        return NextResponse.redirect(new URL('/login?error=auth_failed', requestUrl.origin))
+        return NextResponse.redirect(`${origin}/login?error=auth_failed`)
       }
     } catch (error) {
       console.error('Callback error:', error)
-      return NextResponse.redirect(new URL('/login?error=callback_failed', requestUrl.origin))
+      return NextResponse.redirect(`${origin}/login?error=callback_failed`)
     }
   }
 
-  return NextResponse.redirect(new URL('/', requestUrl.origin))
+  return NextResponse.redirect(`${origin}/`)
 }
 
