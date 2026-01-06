@@ -9,6 +9,7 @@ import { nl } from 'date-fns/locale'
 
 interface ReactionsListProps {
   subItemId: string
+  onReactionAdded?: () => void
 }
 
 export function ReactionsList({ subItemId }: ReactionsListProps) {
@@ -32,6 +33,7 @@ export function ReactionsList({ subItemId }: ReactionsListProps) {
         },
         () => {
           loadReactions()
+          if (onReactionAdded) onReactionAdded()
         }
       )
       .subscribe()
@@ -39,7 +41,7 @@ export function ReactionsList({ subItemId }: ReactionsListProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [subItemId])
+  }, [subItemId, onReactionAdded])
 
   const loadReactions = async () => {
     try {

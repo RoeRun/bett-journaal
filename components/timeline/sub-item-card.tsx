@@ -4,13 +4,14 @@ import { SubItem, Media, Theme } from '@/types/database'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Image, Video, Music, Target, MessageSquare } from 'lucide-react'
+import { Image, Video, Music, Target, MessageSquare, Edit } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { MediaViewer } from '../media/media-viewer'
 import { ReactionsList } from '../reactions/reactions-list'
 import { ReactionForm } from '../reactions/reaction-form'
 import { PollDisplay } from '../polls/poll-display'
 import { createSupabaseClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 interface SubItemCardProps {
   subItem: SubItem
@@ -23,11 +24,32 @@ export function SubItemCard({ subItem, media, themes }: SubItemCardProps) {
   const [showReactions, setShowReactions] = useState(false)
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0)
   const [itemThemes, setItemThemes] = useState<Theme[]>([])
+  const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createSupabaseClient()
 
   useEffect(() => {
     loadItemThemes()
+    checkAdmin()
   }, [subItem.id])
+
+  const checkAdmin = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        
+        if (userData?.role === 'admin') {
+          setIsAdmin(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error checking admin:', error)
+    }
+  }
 
   const loadItemThemes = async () => {
     try {
@@ -54,12 +76,22 @@ export function SubItemCard({ subItem, media, themes }: SubItemCardProps) {
     <Card className="bg-white/80 backdrop-blur-sm border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-md">
       <div className="p-4 space-y-4">
         {/* Header */}
-        <div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-800">
-            {subItem.title}
-          </h3>
-          {subItem.text && (
-            <p className="text-gray-600 mb-3">{subItem.text}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              {subItem.title}
+            </h3>
+            {subItem.text && (
+              <p className="text-gray-600 mb-3">{subItem.text}</p>
+            )}
+          </div>
+          {isAdmin && (
+            <Link href={`/admin/edit/${subItem.id}`}>
+              <Button variant="ghost" size="sm">
+                <Edit className="h-4 w-4 mr-2" />
+                Bewerken
+              </Button>
+            </Link>
           )}
         </div>
 
@@ -177,8 +209,20 @@ export function SubItemCard({ subItem, media, themes }: SubItemCardProps) {
           
           {showReactions && (
             <div className="mt-3 space-y-3">
-              <ReactionsList subItemId={subItem.id} />
-              <ReactionForm subItemId={subItem.id} />
+              <ReactionsList 
+                subItemId={subItem.id} 
+                onReactionAdded={() => {
+                  // Reaction will be refreshed via realtime subscription
+                }}
+              />
+              <ReactionForm 
+                subItemId={subItem.id} 
+                onSuccess={() => {
+                  // Trigger refresh of reactions list
+                  setShowReactions(false)
+                  setTimeout(() => setShowReactions(true), 100)
+                }}
+              />
             </div>
           )}
         </div>

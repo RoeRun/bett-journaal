@@ -14,13 +14,20 @@ interface PollFormProps {
   subItemId: string | null // null when creating new item
   onPollCreated?: (pollId: string) => void
   onPollDataChange?: (pollData: Partial<Poll> | null) => void
+  initialPoll?: Poll | null
 }
 
-export function PollForm({ subItemId, onPollCreated, onPollDataChange }: PollFormProps) {
-  const [showPollForm, setShowPollForm] = useState(false)
-  const [pollType, setPollType] = useState<'multiple_choice' | 'open' | 'rating'>('multiple_choice')
-  const [question, setQuestion] = useState('')
-  const [options, setOptions] = useState<string[]>(['', ''])
+export function PollForm({ subItemId, onPollCreated, onPollDataChange, initialPoll }: PollFormProps) {
+  const [showPollForm, setShowPollForm] = useState(!!initialPoll)
+  const [pollType, setPollType] = useState<'multiple_choice' | 'open' | 'rating'>(
+    initialPoll?.type || 'multiple_choice'
+  )
+  const [question, setQuestion] = useState(initialPoll?.question || '')
+  const [options, setOptions] = useState<string[]>(
+    initialPoll?.options && Array.isArray(initialPoll.options) 
+      ? initialPoll.options 
+      : ['', '']
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const addOption = () => {

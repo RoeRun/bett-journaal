@@ -38,17 +38,25 @@ export function ReactionForm({ subItemId, onSuccess }: ReactionFormProps) {
           text: text.trim(),
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
 
       // Reset form
       setName('')
       setRole('')
       setText('')
       
-      if (onSuccess) onSuccess()
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        // Refresh page to show new reaction
+        window.location.reload()
+      }
     } catch (error: any) {
       console.error('Error submitting reaction:', error)
-      alert('Er ging iets mis bij het plaatsen van je reactie. Probeer het opnieuw.')
+      alert(`Er ging iets mis bij het plaatsen van je reactie: ${error.message || 'Onbekende fout'}`)
     } finally {
       setIsSubmitting(false)
     }

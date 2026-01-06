@@ -79,16 +79,19 @@ export function PollDisplay({ subItemId }: PollDisplayProps) {
           answer: selectedAnswer,
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
 
       setName('')
       setRole('')
       setSelectedAnswer('')
-      loadResponses(poll.id)
+      await loadResponses(poll.id)
       setShowResults(true)
     } catch (error: any) {
       console.error('Error submitting response:', error)
-      alert('Er ging iets mis. Probeer het opnieuw.')
+      alert(`Er ging iets mis: ${error.message || 'Onbekende fout'}`)
     } finally {
       setIsSubmitting(false)
     }
