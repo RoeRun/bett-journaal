@@ -486,7 +486,7 @@ export default function EditSubItemPage() {
           <PollForm
             subItemId={subItemId}
             onPollDataChange={setPollData}
-            initialPoll={existingPoll}
+            initialPoll={existingPoll || null}
           />
         </div>
 
