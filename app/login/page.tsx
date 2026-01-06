@@ -29,6 +29,9 @@ export default function LoginPage() {
 
       if (error) throw error
 
+      // Wait a moment for session to be established
+      await new Promise(resolve => setTimeout(resolve, 500))
+
       // Redirect naar home page na succesvolle login
       router.push('/')
       router.refresh()

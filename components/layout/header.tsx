@@ -14,24 +14,67 @@ export function Header() {
 
   useEffect(() => {
     checkUser()
+
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        checkUser()
+      } else {
+        setIsAdmin(false)
+        setIsLoading(false)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const checkUser = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: userData } = await supabase
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session?.user) {
+        const user = session.user
+        
+        // Wait a bit for trigger to create user if needed
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        // Check if user exists in users table
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('role')
           .eq('id', user.id)
           .single()
         
-        if (userData?.role === 'admin') {
+        if (userError && userError.code === 'PGRST116') {
+          // User doesn't exist yet, wait a bit more and try again
+          await new Promise(resolve => setTimeout(resolve, 500))
+          const { data: retryUserData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+          
+          if (retryUserData?.role === 'admin') {
+            setIsAdmin(true)
+          } else {
+            setIsAdmin(false)
+          }
+        } else if (userData?.role === 'admin') {
           setIsAdmin(true)
+        } else {
+          setIsAdmin(false)
         }
+      } else {
+        setIsAdmin(false)
       }
     } catch (error) {
       console.error('Error checking user:', error)
+      setIsAdmin(false)
     } finally {
       setIsLoading(false)
     }
