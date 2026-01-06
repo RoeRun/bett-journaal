@@ -54,6 +54,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-NEXT_PUBLIC_SUPABASE_URL=https://dibtakyatbvnmpircglk.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=je_anon_key_hier
