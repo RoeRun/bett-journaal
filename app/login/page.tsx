@@ -16,9 +16,6 @@ export default function LoginPage() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: 'https://bett-journaal.vercel.app/auth/callback',
-        },
       })
       if (error) throw error
     } catch (error: any) {
